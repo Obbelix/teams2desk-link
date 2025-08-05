@@ -1,5 +1,7 @@
 module.exports = async function (context, req) {
     context.log('Bot message handler called');
+    context.log('Request method:', req.method);
+    context.log('Request body:', JSON.stringify(req.body, null, 2));
 
     // Handle CORS preflight requests
     if (req.method === 'OPTIONS') {
@@ -11,6 +13,19 @@ module.exports = async function (context, req) {
                 'Access-Control-Allow-Headers': 'Content-Type, Authorization',
                 'Access-Control-Max-Age': '86400'
             }
+        };
+        return;
+    }
+
+    // Respond to GET requests (health check)
+    if (req.method === 'GET') {
+        context.res = {
+            status: 200,
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            body: { message: 'Bot endpoint is running', timestamp: new Date().toISOString() }
         };
         return;
     }
