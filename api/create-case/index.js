@@ -26,11 +26,12 @@ module.exports = async function (context, req) {
         });
 
         // Get environment variables for service desk API
-        const serviceApiUrl = process.env.SERVICE_DESK_API_URL;
-        const serviceApiKey = process.env.SERVICE_DESK_API_KEY;
+        const serviceApiUrl = process.env.SERVICE_DESK_ENDPOINT;
+        const serviceUsername = process.env.SERVICE_DESK_USERNAME;
+        const servicePassword = process.env.SERVICE_DESK_PASSWORD;
         const serviceIdentifier = process.env.SERVICE_DESK_IDENTIFIER;
 
-        if (!serviceApiUrl || !serviceApiKey) {
+        if (!serviceApiUrl || !serviceUsername || !servicePassword) {
             throw new Error('Service desk API configuration missing');
         }
 
@@ -51,7 +52,7 @@ module.exports = async function (context, req) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${serviceApiKey}`,
+                'Authorization': `Basic ${Buffer.from(`${serviceUsername}:${servicePassword}`).toString('base64')}`,
                 'X-Identifier': serviceIdentifier
             },
             body: JSON.stringify(servicePayload)
