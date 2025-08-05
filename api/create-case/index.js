@@ -48,15 +48,31 @@ module.exports = async function (context, req) {
             throw new Error('Service desk API configuration missing');
         }
 
-        // Format the payload for your service desk system (easitGO)
+        // Format the payload for your service desk system (easitGO) - using correct format
         const servicePayload = {
-            title: title,
-            description: description,
-            manager: manager,
-            contact: contact,
-            source: 'Microsoft Teams',
-            priority: 'Normal',
-            category: 'IT Support'
+            importHandlerIdentifier: serviceIdentifier || "teams2gonew",
+            itemToImport: [
+                {
+                    property: [
+                        {
+                            name: "title",
+                            content: title || "Support Request"
+                        },
+                        {
+                            name: "description", 
+                            content: description || messages || ""
+                        },
+                        {
+                            name: "manager",
+                            content: manager || ""
+                        },
+                        {
+                            name: "contact",
+                            content: contact || ""
+                        }
+                    ]
+                }
+            ]
         };
 
         // Make API call to service desk
