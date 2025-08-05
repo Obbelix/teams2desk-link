@@ -94,8 +94,7 @@
     }
   ],
   "permissions": [
-    "identity",
-    "messageTeamMembers"
+    "identity"
   ],
   "validDomains": [
     "jolly-coast-0f84fb503.2.azurestaticapps.net",
