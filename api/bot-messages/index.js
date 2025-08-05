@@ -1,6 +1,27 @@
+const crypto = require('crypto');
+
+// Bot credentials from Azure environment variables
+const MicrosoftAppId = process.env.MicrosoftAppId;
+const MicrosoftAppPassword = process.env.MicrosoftAppPassword;
+
+// Verify JWT token for Bot Framework authentication
+async function verifyJwtToken(authHeader) {
+    // In production, you should properly verify the JWT token
+    // For now, we'll do basic validation
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return false;
+    }
+    
+    // Basic token presence check - in production, verify against Microsoft's public keys
+    const token = authHeader.substring(7);
+    return token && token.length > 0;
+}
+
 module.exports = async function (context, req) {
     context.log('Bot message handler called');
     context.log('Request method:', req.method);
+    context.log('App ID configured:', MicrosoftAppId ? 'YES' : 'NO');
+    context.log('App Password configured:', MicrosoftAppPassword ? 'YES' : 'NO');
     context.log('Request headers:', JSON.stringify(req.headers, null, 2));
     context.log('Request body:', JSON.stringify(req.body, null, 2));
 
@@ -26,9 +47,35 @@ module.exports = async function (context, req) {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*'
             },
-            body: { message: 'Bot endpoint is running', timestamp: new Date().toISOString() }
+            body: { 
+                message: 'Bot endpoint is running', 
+                timestamp: new Date().toISOString(),
+                appId: MicrosoftAppId || 'Not configured',
+                authenticated: !!(MicrosoftAppId && MicrosoftAppPassword)
+            }
         };
         return;
+    }
+
+    // For POST requests, verify authentication
+    if (req.method === 'POST') {
+        const authHeader = req.headers.authorization;
+        
+        // Verify JWT token (simplified for now)
+        if (!await verifyJwtToken(authHeader)) {
+            context.log('Authentication failed');
+            context.res = {
+                status: 401,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                body: { error: 'Unauthorized' }
+            };
+            return;
+        }
+        
+        context.log('Authentication successful');
     }
 
     try {
