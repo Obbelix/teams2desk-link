@@ -26,9 +26,10 @@ module.exports = async function (context, req) {
         });
 
         // Get environment variables for service desk API
-        const serviceApiUrl = process.env.SERVICE_DESK_ENDPOINT;
-        const serviceUsername = process.env.SERVICE_DESK_USERNAME;
-        const servicePassword = process.env.SERVICE_DESK_PASSWORD;
+        // Based on Postman: https://helpdesk-rest.sunne.se/integration-api/items
+        const serviceApiUrl = process.env.SERVICE_DESK_ENDPOINT; // Should be: https://helpdesk-rest.sunne.se/integration-api/items
+        const serviceUsername = process.env.SERVICE_DESK_USERNAME; // Should be the long token like: f64b81331702338d5d55165ef0122d2c607...
+        const servicePassword = process.env.SERVICE_DESK_PASSWORD; // Your actual password
         const serviceIdentifier = process.env.SERVICE_DESK_IDENTIFIER;
 
         context.log('Environment check:', {
