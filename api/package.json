@@ -4,7 +4,7 @@
   "description": "Azure Functions for Teams2Go Service Desk",
   "main": "index.js",
   "dependencies": {
-    "node-fetch": "^2.6.7"
+    "node-fetch": "^2.7.0"
   },
   "engines": {
     "node": ">=18.0.0"
