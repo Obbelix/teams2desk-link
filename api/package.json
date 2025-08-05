@@ -1,0 +1,12 @@
+{
+  "name": "teams2go-api",
+  "version": "1.0.0",
+  "description": "Azure Functions for Teams2Go Service Desk",
+  "main": "index.js",
+  "dependencies": {
+    "node-fetch": "^2.6.7"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
