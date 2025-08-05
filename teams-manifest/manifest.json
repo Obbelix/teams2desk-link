@@ -54,7 +54,30 @@
       "isNotificationOnly": false,
       "supportsCalling": false,
       "supportsVideo": false,
-      "supportsFiles": false
+      "supportsFiles": false,
+      "commandLists": [
+        {
+          "scopes": [
+            "personal",
+            "team",
+            "groupChat"
+          ],
+          "commands": [
+            {
+              "title": "Help",
+              "description": "Get help with creating service desk cases"
+            },
+            {
+              "title": "Hi",
+              "description": "Say hello to the bot"
+            },
+            {
+              "title": "Hello",
+              "description": "Greet the bot"
+            }
+          ]
+        }
+      ]
     }
   ],
   "composeExtensions": [
