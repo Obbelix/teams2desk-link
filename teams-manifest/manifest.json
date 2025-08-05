@@ -1,9 +1,12 @@
 {
   "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.16/MicrosoftTeams.schema.json",
+  "version": "1.3.3",
   "manifestVersion": "1.16",
-  "version": "1.0.0",
   "id": "5108ef50-63c5-4a69-8d1c-f596d806b294",
-  "packageName": "com.teams2go.servicedesk",
+  "name": {
+    "short": "Teams2Go Service Desk",
+    "full": "Teams2Go Service Desk - Create Support Cases"
+  },
   "developer": {
     "name": "Teams2Go",
     "websiteUrl": "https://jolly-coast-0f84fb503.2.azurestaticapps.net",
@@ -13,10 +16,6 @@
   "icons": {
     "color": "color.png",
     "outline": "outline.png"
-  },
-  "name": {
-    "short": "Teams2Go Service Desk",
-    "full": "Teams2Go Service Desk - Create Support Cases"
   },
   "description": {
     "short": "Create service desk cases directly from Microsoft Teams",
