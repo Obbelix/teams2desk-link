@@ -1,10 +1,14 @@
 
-const { BotFrameworkAdapter, ActivityHandler } = require('botbuilder');
+const { CloudAdapter, ConfigurationServiceClientCredentialFactory, ActivityHandler } = require('botbuilder');
 
-const adapter = new BotFrameworkAdapter({
-  appId: process.env.MicrosoftAppId,
-  appPassword: process.env.MicrosoftAppPassword
+const credentialsFactory = new ConfigurationServiceClientCredentialFactory({
+  MicrosoftAppId: process.env.MicrosoftAppId,
+  MicrosoftAppPassword: process.env.MicrosoftAppPassword,
+  MicrosoftAppType: "MultiTenant",
+  MicrosoftAppTenantId: process.env.MicrosoftAppTenantId
 });
+
+const adapter = new CloudAdapter(credentialsFactory);
 
 const bot = new ActivityHandler();
 
