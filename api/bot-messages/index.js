@@ -1,50 +1,43 @@
 const { BotFrameworkAdapter } = require('botbuilder');
 
-// Bot credentials from Azure environment variables
+// Bot credentials from environment variables
 const MicrosoftAppId = process.env.MicrosoftAppId;
 const MicrosoftAppPassword = process.env.MicrosoftAppPassword;
 
-// Create Bot Framework adapter
+// Create adapter
 const adapter = new BotFrameworkAdapter({
-    appId: MicrosoftAppId,
-    appPassword: MicrosoftAppPassword
+  appId: MicrosoftAppId,
+  appPassword: MicrosoftAppPassword
 });
 
-// Bot logic handler
+// Bot logic
 const botLogic = async (turnContext) => {
-    const activity = turnContext.activity;
-    
-    // Handle conversationUpdate activities (welcome messages)
-    if (activity.type === 'conversationUpdate') {
-        if (activity.membersAdded && activity.membersAdded.length > 0) {
-            // Check if bot was added to the conversation
-            const botWasAdded = activity.membersAdded.some(member => 
-                member.id === activity.recipient?.id
-            );
-            
-            if (botWasAdded) {
-                // Different welcome messages for different scopes
-                if (activity.conversation?.conversationType === 'personal') {
-                    await turnContext.sendActivity('Hello! Welcome to 2Go Service Desk! 🎉\n\nI can help you create support cases directly from your Teams conversations. Here\'s how to get started:\n\n1. Right-click on any message\n2. Select "Apps" → "Create case"\n3. Fill out the case details\n4. Submit to create your support ticket\n\nYou can also chat with me using commands like "Hi", "Hello", or "Help" for more information.');
-                } else {
-                    await turnContext.sendActivity('Hello team! 👋 Welcome to 2Go Service Desk!\n\nI can help you create support cases directly from your Teams conversations. Here\'s how to get started:\n\n1. Right-click on any message\n2. Select "Apps" → "Create case"\n3. Fill out the case details\n4. Submit to create your support ticket\n\nYou can also chat with me using commands like "Hi", "Hello", or "Help" for more information.');
-                }
-            }
-        }
-    }
-    // Handle message activities
-    else if (activity.type === 'message' && activity.text) {
-        const text = activity.text.toLowerCase().trim();
+  const activity = turnContext.activity;
 
-        // Respond to basic bot commands
-        if (text.includes('hi') || text.includes('hello') || text.includes('hej')) {
-            await turnContext.sendActivity('Hello! I\'m the 2Go Service Desk bot. I can help you create support cases from your Teams conversations. Use the "Create case" command from the message menu to get started.');
-        } else if (text.includes('help') || text.includes('hjälp')) {
-            await turnContext.sendActivity('I can help you create service desk cases directly from Teams! Here\'s how:\n\n1. Right-click on any message\n2. Select "Apps" → "Create case"\n3. Fill out the case details\n4. Submit to create your support ticket\n\nYou can also use commands like "Hi" or "Hello" to chat with me.');
-        } else if (text.trim().length > 0) {
-            await turnContext.sendActivity('I\'m the 2Go Service Desk bot! I help you create support cases from Teams messages. Try saying "Help" to learn more, or use the "Create case" command from any message menu.');
+  // Handle welcome messages
+  if (activity.type === 'conversationUpdate' && activity.membersAdded) {
+    for (const member of activity.membersAdded) {
+      if (member.id !== activity.recipient.id) {
+        if (activity.conversation?.conversationType === 'personal') {
+          await turnContext.sendActivity("👋 Hello and welcome to **2Go Service Desk**! I can help you create support cases.");
+        } else if (activity.conversation?.conversationType === 'channel') {
+          await turnContext.sendActivity("👋 Hi everyone! I'm **2Go Service Desk bot**. Mention me or type 'help' to get started.");
         }
+      }
     }
+  }
+
+  // Handle message events (hi, help, etc.)
+  else if (activity.type === 'message') {
+    const text = activity.text?.toLowerCase();
+    if (text.includes('hi') || text.includes('hello')) {
+      await turnContext.sendActivity("👋 Hi there! I'm the 2Go Service Desk bot. Need help?");
+    } else if (text.includes('help')) {
+      await turnContext.sendActivity("ℹ️ You can create a support case by clicking the button or describing your issue here.");
+    } else {
+      await turnContext.sendActivity("🤖 I'm here to help. Try saying `hi` or `help`.");
+    }
+  }
 };
 
 module.exports = async function (context, req) {
