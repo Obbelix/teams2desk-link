@@ -1,3 +1,4 @@
+
 const { BotFrameworkAdapter } = require('botbuilder');
 
 // Bot credentials from environment variables
