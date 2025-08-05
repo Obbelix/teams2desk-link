@@ -5,6 +5,10 @@ const { BotFrameworkAdapter } = require('botbuilder');
 const MicrosoftAppId = process.env.MicrosoftAppId;
 const MicrosoftAppPassword = process.env.MicrosoftAppPassword;
 
+console.log('Loading bot-messages function...');
+console.log('MicrosoftAppId:', MicrosoftAppId ? 'SET' : 'NOT SET');
+console.log('MicrosoftAppPassword:', MicrosoftAppPassword ? 'SET' : 'NOT SET');
+
 // Create adapter (only if credentials are available)
 let adapter;
 try {
@@ -13,6 +17,9 @@ try {
       appId: MicrosoftAppId,
       appPassword: MicrosoftAppPassword
     });
+    console.log('BotFrameworkAdapter created successfully');
+  } else {
+    console.log('Bot credentials missing - adapter not created');
   }
 } catch (error) {
   console.error('Failed to create BotFrameworkAdapter:', error);
