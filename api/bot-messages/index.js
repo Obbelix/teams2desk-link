@@ -39,8 +39,22 @@ module.exports = async function (context, req) {
         // Handle conversationUpdate activities (welcome messages)
         if (activity.type === 'conversationUpdate') {
             // Send welcome message when bot is added
-            if (activity.membersAdded && activity.membersAdded.some(member => member.id === activity.recipient.id)) {
-                responseText = 'Welcome to 2Go Service Desk! 🎉\n\nI can help you create support cases directly from your Teams conversations. Here\'s how to get started:\n\n1. Right-click on any message\n2. Select "Apps" → "Create case"\n3. Fill out the case details\n4. Submit to create your support ticket\n\nYou can also chat with me using commands like "Hi", "Hello", or "Help" for more information.';
+            if (activity.membersAdded && activity.membersAdded.length > 0) {
+                // Check if bot was added (compare with bot ID from activity)
+                const botWasAdded = activity.membersAdded.some(member => 
+                    member.id && (member.id === activity.recipient?.id || member.id.includes('5108ef50-63c5-4a69-8d1c-f596d806b294'))
+                );
+                
+                if (botWasAdded) {
+                    responseText = 'Welcome to 2Go Service Desk! 🎉\n\nI can help you create support cases directly from your Teams conversations. Here\'s how to get started:\n\n1. Right-click on any message\n2. Select "Apps" → "Create case"\n3. Fill out the case details\n4. Submit to create your support ticket\n\nYou can also chat with me using commands like "Hi", "Hello", or "Help" for more information.';
+                } else {
+                    // No response needed for other member additions
+                    context.res = {
+                        status: 200,
+                        body: {}
+                    };
+                    return;
+                }
             } else {
                 // No response needed for other conversationUpdate events
                 context.res = {
