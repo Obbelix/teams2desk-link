@@ -60,6 +60,8 @@ module.exports = async function (context, req) {
     context.log('Request method:', req.method);
     context.log('App ID configured:', MicrosoftAppId ? 'YES' : 'NO');
     context.log('App Password configured:', MicrosoftAppPassword ? 'YES' : 'NO');
+    context.log('App ID value:', MicrosoftAppId);
+    context.log('Environment variables available:', Object.keys(process.env).filter(key => key.toLowerCase().includes('microsoft')));
 
     // Handle CORS preflight requests
     if (req.method === 'OPTIONS') {
