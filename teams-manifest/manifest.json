@@ -1,0 +1,58 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.16/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.16",
+  "version": "1.0.0",
+  "id": "teams2go-servicedesk",
+  "packageName": "com.teams2go.servicedesk",
+  "developer": {
+    "name": "Teams2Go",
+    "websiteUrl": "https://teams2go.com",
+    "privacyUrl": "https://teams2go.com/privacy",
+    "termsOfUseUrl": "https://teams2go.com/terms"
+  },
+  "icons": {
+    "color": "color.png",
+    "outline": "outline.png"
+  },
+  "name": {
+    "short": "Teams2Go Service Desk",
+    "full": "Teams2Go Service Desk - Create Support Cases"
+  },
+  "description": {
+    "short": "Create service desk cases directly from Microsoft Teams",
+    "full": "Teams2Go Service Desk allows you to create and manage support cases directly from Microsoft Teams. Export conversations and create structured support requests that integrate with your existing service desk system."
+  },
+  "accentColor": "#FFFFFF",
+  "configurableTabs": [
+    {
+      "configurationUrl": "https://YOUR_DOMAIN.azurestaticapps.net/",
+      "canUpdateConfiguration": true,
+      "scopes": [
+        "team",
+        "groupchat"
+      ]
+    }
+  ],
+  "staticTabs": [
+    {
+      "entityId": "teams2go-servicedesk-tab",
+      "name": "Service Desk",
+      "contentUrl": "https://YOUR_DOMAIN.azurestaticapps.net/",
+      "websiteUrl": "https://YOUR_DOMAIN.azurestaticapps.net/",
+      "scopes": [
+        "personal"
+      ]
+    }
+  ],
+  "permissions": [
+    "identity",
+    "messageTeamMembers"
+  ],
+  "validDomains": [
+    "YOUR_DOMAIN.azurestaticapps.net"
+  ],
+  "webApplicationInfo": {
+    "id": "YOUR_APP_ID",
+    "resource": "https://YOUR_DOMAIN.azurestaticapps.net/"
+  }
+}
