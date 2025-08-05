@@ -31,7 +31,19 @@ module.exports = async function (context, req) {
         const servicePassword = process.env.SERVICE_DESK_PASSWORD;
         const serviceIdentifier = process.env.SERVICE_DESK_IDENTIFIER;
 
+        context.log('Environment check:', {
+            hasUrl: !!serviceApiUrl,
+            hasUsername: !!serviceUsername,
+            hasPassword: !!servicePassword,
+            hasIdentifier: !!serviceIdentifier
+        });
+
         if (!serviceApiUrl || !serviceUsername || !servicePassword) {
+            context.log.error('Missing environment variables:', {
+                SERVICE_DESK_ENDPOINT: !!serviceApiUrl,
+                SERVICE_DESK_USERNAME: !!serviceUsername,
+                SERVICE_DESK_PASSWORD: !!servicePassword
+            });
             throw new Error('Service desk API configuration missing');
         }
 
