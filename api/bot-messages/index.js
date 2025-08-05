@@ -30,8 +30,8 @@ bot.onMembersAdded(async (context, next) => {
   await next();
 });
 
-module.exports = async function (req, res) {
-  await adapter.processActivity(req, res, async (context) => {
-    await bot.run(context);
+module.exports = async function (context, req) {
+  await adapter.processActivity(req, context.res, async (turnContext) => {
+    await bot.run(turnContext);
   });
 };
