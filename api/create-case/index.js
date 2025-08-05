@@ -72,7 +72,13 @@ module.exports = async function (context, req) {
 
         if (!response.ok) {
             const errorText = await response.text();
-            throw new Error(`Service desk API error: ${response.status} - ${errorText}`);
+            context.log.error('Service desk API error details:', {
+                status: response.status,
+                statusText: response.statusText,
+                headers: Object.fromEntries(response.headers.entries()),
+                body: errorText.substring(0, 500) + '...'
+            });
+            throw new Error(`Service desk API error: ${response.status} - ${errorText.substring(0, 200)}`);
         }
 
         const result = await response.json();
