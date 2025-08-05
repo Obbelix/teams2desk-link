@@ -2,13 +2,13 @@
   "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.16/MicrosoftTeams.schema.json",
   "manifestVersion": "1.16",
   "version": "1.0.0",
-  "id": "teams2go-servicedesk-uuid",
+  "id": "5108ef50-63c5-4a69-8d1c-f596d806b294",
   "packageName": "com.teams2go.servicedesk",
   "developer": {
     "name": "Teams2Go",
-    "websiteUrl": "https://YOUR_DOMAIN.azurestaticapps.net",
-    "privacyUrl": "https://YOUR_DOMAIN.azurestaticapps.net/privacy",
-    "termsOfUseUrl": "https://YOUR_DOMAIN.azurestaticapps.net/terms"
+    "websiteUrl": "https://jolly-coast-0f84fb503.2.azurestaticapps.net",
+    "privacyUrl": "https://jolly-coast-0f84fb503.2.azurestaticapps.net/privacy",
+    "termsOfUseUrl": "https://jolly-coast-0f84fb503.2.azurestaticapps.net/terms"
   },
   "icons": {
     "color": "color.png",
@@ -25,7 +25,7 @@
   "accentColor": "#0078d4",
   "configurableTabs": [
     {
-      "configurationUrl": "https://YOUR_DOMAIN.azurestaticapps.net/",
+      "configurationUrl": "https://jolly-coast-0f84fb503.2.azurestaticapps.net/",
       "canUpdateConfiguration": true,
       "scopes": [
         "team",
@@ -37,8 +37,8 @@
     {
       "entityId": "teams2go-servicedesk-tab",
       "name": "Service Desk",
-      "contentUrl": "https://YOUR_DOMAIN.azurestaticapps.net/",
-      "websiteUrl": "https://YOUR_DOMAIN.azurestaticapps.net/",
+      "contentUrl": "https://jolly-coast-0f84fb503.2.azurestaticapps.net/",
+      "websiteUrl": "https://jolly-coast-0f84fb503.2.azurestaticapps.net/",
       "scopes": [
         "personal"
       ]
@@ -46,7 +46,7 @@
   ],
   "bots": [
     {
-      "botId": "YOUR_BOT_APP_ID",
+      "botId": "5108ef50-63c5-4a69-8d1c-f596d806b294",
       "scopes": [
         "personal",
         "team",
@@ -60,7 +60,7 @@
   ],
   "composeExtensions": [
     {
-      "botId": "YOUR_BOT_APP_ID",
+      "botId": "5108ef50-63c5-4a69-8d1c-f596d806b294",
       "commands": [
         {
           "id": "createCase",
@@ -77,7 +77,7 @@
             "title": "Create Service Desk Case",
             "width": "large",
             "height": "large",
-            "url": "https://YOUR_DOMAIN.azurestaticapps.net/#/create-case"
+            "url": "https://jolly-coast-0f84fb503.2.azurestaticapps.net/#/create-case"
           }
         }
       ],
@@ -86,7 +86,7 @@
           "type": "link",
           "value": {
             "domains": [
-              "YOUR_DOMAIN.azurestaticapps.net"
+              "jolly-coast-0f84fb503.2.azurestaticapps.net"
             ],
             "supportsAnonymizedPayloads": false
           }
@@ -99,7 +99,7 @@
     "messageTeamMembers"
   ],
   "validDomains": [
-    "YOUR_DOMAIN.azurestaticapps.net",
+    "jolly-coast-0f84fb503.2.azurestaticapps.net",
     "token.botframework.com"
   ]
 }
