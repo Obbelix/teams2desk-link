@@ -1,9 +1,9 @@
 
-const { ActivityHandler, CloudAdapter } = require("botbuilder");
+const { BotFrameworkAdapter, ActivityHandler } = require('botbuilder');
 
-const adapter = new CloudAdapter({
-  MicrosoftAppId: process.env.MicrosoftAppId,
-  MicrosoftAppPassword: process.env.MicrosoftAppPassword
+const adapter = new BotFrameworkAdapter({
+  appId: process.env.MicrosoftAppId,
+  appPassword: process.env.MicrosoftAppPassword
 });
 
 const bot = new ActivityHandler();
@@ -31,7 +31,7 @@ bot.onMembersAdded(async (context, next) => {
 });
 
 module.exports = async function (req, res) {
-  await adapter.process(req, res, async (context) => {
+  await adapter.processActivity(req, res, async (context) => {
     await bot.run(context);
   });
 };
