@@ -1,6 +1,7 @@
 module.exports = async function (context, req) {
     context.log('Bot message handler called');
     context.log('Request method:', req.method);
+    context.log('Request headers:', JSON.stringify(req.headers, null, 2));
     context.log('Request body:', JSON.stringify(req.body, null, 2));
 
     // Handle CORS preflight requests
