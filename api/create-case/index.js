@@ -60,13 +60,14 @@ module.exports = async function (context, req) {
         };
 
         // Make API call to service desk
+        // Password is username + identifier concatenated
+        const authPassword = serviceUsername + serviceIdentifier;
         const fetch = require('node-fetch');
         const response = await fetch(serviceApiUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Basic ${Buffer.from(`${serviceUsername}:${servicePassword}`).toString('base64')}`,
-                'X-Identifier': serviceIdentifier
+                'Authorization': `Basic ${Buffer.from(`${serviceUsername}:${authPassword}`).toString('base64')}`
             },
             body: JSON.stringify(servicePayload)
         });
