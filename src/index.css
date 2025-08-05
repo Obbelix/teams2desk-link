@@ -2,39 +2,55 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Teams2Go Service Desk - Design System inspired by Microsoft Teams */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Teams Brand Colors */
+    --teams-purple: 101 84% 47%;
+    --teams-purple-light: 101 84% 95%;
+    --teams-blue: 210 100% 56%;
+    --teams-blue-light: 210 100% 95%;
+    
+    /* Primary System Colors */
+    --background: 0 0% 98%;
+    --foreground: 224 9% 22%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 224 9% 22%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 224 9% 22%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 101 84% 47%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 210 100% 96%;
+    --secondary-foreground: 210 100% 56%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 225 16% 95%;
+    --muted-foreground: 224 9% 60%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 101 84% 95%;
+    --accent-foreground: 101 84% 47%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+
+    --border: 225 16% 90%;
+    --input: 225 16% 94%;
+    --ring: 101 84% 47%;
+
+    /* Teams Gradients */
+    --gradient-teams: linear-gradient(135deg, hsl(var(--teams-purple)), hsl(var(--teams-blue)));
+    --gradient-hero: linear-gradient(135deg, hsl(101 84% 47%), hsl(210 100% 56%));
+    
+    /* Teams Shadows */
+    --shadow-teams: 0 8px 32px hsl(101 84% 47% / 0.12);
+    --shadow-popup: 0 16px 64px hsl(224 9% 22% / 0.15);
 
     --radius: 0.5rem;
 
