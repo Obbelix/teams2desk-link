@@ -5,11 +5,18 @@ const { BotFrameworkAdapter } = require('botbuilder');
 const MicrosoftAppId = process.env.MicrosoftAppId;
 const MicrosoftAppPassword = process.env.MicrosoftAppPassword;
 
-// Create adapter
-const adapter = new BotFrameworkAdapter({
-  appId: MicrosoftAppId,
-  appPassword: MicrosoftAppPassword
-});
+// Create adapter (only if credentials are available)
+let adapter;
+try {
+  if (MicrosoftAppId && MicrosoftAppPassword) {
+    adapter = new BotFrameworkAdapter({
+      appId: MicrosoftAppId,
+      appPassword: MicrosoftAppPassword
+    });
+  }
+} catch (error) {
+  console.error('Failed to create BotFrameworkAdapter:', error);
+}
 
 // Bot logic
 const botLogic = async (turnContext) => {
@@ -97,6 +104,23 @@ module.exports = async function (context, req) {
 
     // For POST requests, process with Bot Framework adapter
     if (req.method === 'POST') {
+        if (!adapter) {
+            context.res = {
+                status: 503,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                body: {
+                    error: 'Bot not configured',
+                    message: 'MicrosoftAppId or MicrosoftAppPassword not set',
+                    appId: MicrosoftAppId || 'Not set',
+                    hasPassword: !!MicrosoftAppPassword
+                }
+            };
+            return;
+        }
+
         try {
             await adapter.processActivity(req, context.res, botLogic);
         } catch (error) {
