@@ -2,13 +2,13 @@
   "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.16/MicrosoftTeams.schema.json",
   "manifestVersion": "1.16",
   "version": "1.0.0",
-  "id": "teams2go-servicedesk",
+  "id": "teams2go-servicedesk-uuid",
   "packageName": "com.teams2go.servicedesk",
   "developer": {
     "name": "Teams2Go",
-    "websiteUrl": "https://teams2go.com",
-    "privacyUrl": "https://teams2go.com/privacy",
-    "termsOfUseUrl": "https://teams2go.com/terms"
+    "websiteUrl": "https://YOUR_DOMAIN.azurestaticapps.net",
+    "privacyUrl": "https://YOUR_DOMAIN.azurestaticapps.net/privacy",
+    "termsOfUseUrl": "https://YOUR_DOMAIN.azurestaticapps.net/terms"
   },
   "icons": {
     "color": "color.png",
@@ -22,14 +22,14 @@
     "short": "Create service desk cases directly from Microsoft Teams",
     "full": "Teams2Go Service Desk allows you to create and manage support cases directly from Microsoft Teams. Export conversations and create structured support requests that integrate with your existing service desk system."
   },
-  "accentColor": "#FFFFFF",
+  "accentColor": "#0078d4",
   "configurableTabs": [
     {
       "configurationUrl": "https://YOUR_DOMAIN.azurestaticapps.net/",
       "canUpdateConfiguration": true,
       "scopes": [
         "team",
-        "groupchat"
+        "groupChat"
       ]
     }
   ],
@@ -44,15 +44,62 @@
       ]
     }
   ],
+  "bots": [
+    {
+      "botId": "YOUR_BOT_APP_ID",
+      "scopes": [
+        "personal",
+        "team",
+        "groupChat"
+      ],
+      "isNotificationOnly": false,
+      "supportsCalling": false,
+      "supportsVideo": false,
+      "supportsFiles": false
+    }
+  ],
+  "composeExtensions": [
+    {
+      "botId": "YOUR_BOT_APP_ID",
+      "commands": [
+        {
+          "id": "createCase",
+          "type": "action",
+          "title": "Create case",
+          "description": "Create a service desk case from this conversation",
+          "initialRun": false,
+          "fetchTask": true,
+          "context": [
+            "message",
+            "compose"
+          ],
+          "taskInfo": {
+            "title": "Create Service Desk Case",
+            "width": "large",
+            "height": "large",
+            "url": "https://YOUR_DOMAIN.azurestaticapps.net/#/create-case"
+          }
+        }
+      ],
+      "messageHandlers": [
+        {
+          "type": "link",
+          "value": {
+            "domains": [
+              "YOUR_DOMAIN.azurestaticapps.net"
+            ],
+            "supportsAnonymizedPayloads": false
+          }
+        }
+      ]
+    }
+  ],
   "permissions": [
     "identity",
     "messageTeamMembers"
   ],
   "validDomains": [
-    "YOUR_DOMAIN.azurestaticapps.net"
-  ],
-  "webApplicationInfo": {
-    "id": "YOUR_APP_ID",
-    "resource": "https://YOUR_DOMAIN.azurestaticapps.net/"
-  }
+    "YOUR_DOMAIN.azurestaticapps.net",
+    "token.botframework.com"
+  ]
 }
