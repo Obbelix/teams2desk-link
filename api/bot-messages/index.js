@@ -7,9 +7,16 @@ const adapter = new BotFrameworkAdapter({
 });
 
 module.exports = async function (context, req) {
-  if (req.method === "POST") {
-    try {
-      await adapter.processActivity(req, context, async (turnContext) => {
+  try {
+    if (req.method === "POST") {
+      // Set up the response object properly for Azure Functions
+      context.res = {
+        status: 200,
+        body: undefined,
+        headers: {}
+      };
+
+      await adapter.processActivity(req, context.res, async (turnContext) => {
         const text = turnContext.activity.text?.toLowerCase() || "";
 
         if (text.includes("hi") || text.includes("hello")) {
@@ -20,17 +27,18 @@ module.exports = async function (context, req) {
           await turnContext.sendActivity("Sorry, I didn't understand that.");
         }
       });
-    } catch (error) {
-      context.log.error('Bot error:', error.message);
+    } else {
       context.res = {
-        status: 500,
-        body: { error: error.message }
+        status: 200,
+        body: "Bot endpoint is running",
       };
     }
-  } else {
+  } catch (error) {
+    context.log.error('Bot error:', error.message);
+    context.log.error('Error details:', error);
     context.res = {
-      status: 200,
-      body: "Bot endpoint is running",
+      status: 500,
+      body: { error: error.message }
     };
   }
 };
