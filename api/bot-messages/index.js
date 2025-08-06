@@ -36,11 +36,24 @@ bot.onMembersAdded(async (context, next) => {
 
 module.exports = async function (context, req) {
   try {
+    // Log the incoming request for debugging
+    context.log('Incoming request:', JSON.stringify(req.body, null, 2));
+    
+    // Check if this is a proper Bot Framework request
+    if (!req.body || !req.body.type) {
+      context.res = {
+        status: 400,
+        body: { error: 'Invalid Bot Framework request. This endpoint should only be called by Microsoft Teams.' }
+      };
+      return;
+    }
+
     await adapter.processActivity(req, context.res, async (turnContext) => {
       await bot.run(turnContext);
     });
   } catch (error) {
-    context.log.error('Bot error:', error);
+    context.log.error('Bot error:', error.message);
+    context.log.error('Error stack:', error.stack);
     context.res = {
       status: 500,
       body: { error: error.message }
