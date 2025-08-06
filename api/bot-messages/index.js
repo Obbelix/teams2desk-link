@@ -35,7 +35,15 @@ bot.onMembersAdded(async (context, next) => {
 });
 
 module.exports = async function (context, req) {
-  await adapter.processActivity(req, context.res, async (turnContext) => {
-    await bot.run(turnContext);
-  });
+  try {
+    await adapter.processActivity(req, context.res, async (turnContext) => {
+      await bot.run(turnContext);
+    });
+  } catch (error) {
+    context.log.error('Bot error:', error);
+    context.res = {
+      status: 500,
+      body: { error: error.message }
+    };
+  }
 };
