@@ -1,10 +1,43 @@
 
-const { BotFrameworkAdapter } = require("botbuilder");
+const { BotFrameworkAdapter, ActivityHandler } = require("botbuilder");
 
 const adapter = new BotFrameworkAdapter({
   appId: process.env.MicrosoftAppId,
   appPassword: process.env.MicrosoftAppPassword,
 });
+
+// Simple bot logic
+class TeamsBot extends ActivityHandler {
+  constructor() {
+    super();
+
+    // Welcome message
+    this.onMembersAdded(async (context, next) => {
+      const membersAdded = context.activity.membersAdded;
+      for (let member of membersAdded) {
+        if (member.id !== context.activity.recipient.id) {
+          await context.sendActivity("👋 Välkommen! Skriv 'hi' eller 'help' för att börja.");
+        }
+      }
+      await next();
+    });
+
+    // Handle messages
+    this.onMessage(async (context, next) => {
+      const text = context.activity.text?.toLowerCase();
+      if (text.includes("hi")) {
+        await context.sendActivity("Hej där! 👋");
+      } else if (text.includes("help")) {
+        await context.sendActivity("Här är vad jag kan hjälpa dig med...");
+      } else {
+        await context.sendActivity("Jag förstod inte riktigt. Skriv 'help' för hjälp.");
+      }
+      await next();
+    });
+  }
+}
+
+const bot = new TeamsBot();
 
 module.exports = async function (context, req) {
   try {
@@ -17,15 +50,7 @@ module.exports = async function (context, req) {
       };
 
       await adapter.processActivity(req, context.res, async (turnContext) => {
-        const text = turnContext.activity.text?.toLowerCase() || "";
-
-        if (text.includes("hi") || text.includes("hello")) {
-          await turnContext.sendActivity("Hello there! 👋");
-        } else if (text.includes("help")) {
-          await turnContext.sendActivity("Here's how I can help you...");
-        } else {
-          await turnContext.sendActivity("Sorry, I didn't understand that.");
-        }
+        await bot.run(turnContext);
       });
     } else {
       context.res = {
