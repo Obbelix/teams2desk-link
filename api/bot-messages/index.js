@@ -1,5 +1,5 @@
 
-const { TeamsActivityHandler, CloudAdapter, ConfigurationServiceClientCredentialFactory, TurnContext, MessageFactory } = require("botbuilder");
+const { TeamsActivityHandler, CloudAdapter, ConfigurationServiceClientCredentialFactory, TurnContext, MessageFactory, createBotFrameworkAuthenticationFromConfiguration } = require("botbuilder");
 const { app } = require('@azure/functions');
 
 const credentialsFactory = new ConfigurationServiceClientCredentialFactory({
@@ -9,7 +9,9 @@ const credentialsFactory = new ConfigurationServiceClientCredentialFactory({
   MicrosoftAppTenantId: process.env.MicrosoftAppTenantId
 });
 
-const adapter = new CloudAdapter(credentialsFactory);
+// Correct CloudAdapter initialization for Azure Functions/Teams
+const botFrameworkAuthentication = createBotFrameworkAuthenticationFromConfiguration(null, credentialsFactory);
+const adapter = new CloudAdapter(botFrameworkAuthentication);
 
 // Add error handler for better debugging
 adapter.onTurnError = async (context, error) => {
@@ -106,19 +108,20 @@ module.exports = async function (context, req) {
   }
 
   try {
-    // Use proper response handling for Azure Functions
-    await adapter.process(req, {
-      send: (status, body, headers) => {
-        context.res = { 
-          status: status || 200, 
-          body, 
-          headers: headers || { 'Content-Type': 'application/json' }
-        };
-      },
-      end: () => {
-        // Response is handled by context.res
-      }
-    }, async (turnContext) => {
+    // Bridge Azure Functions req/res to BotFramework adapter
+    const resShim = (() => {
+      let statusCode = 200;
+      const headers = { 'Content-Type': 'application/json' };
+      return {
+        status: (code) => { statusCode = code; return resShim; },
+        setHeader: (k, v) => { headers[k] = v; },
+        writeHead: (code, hdrs) => { statusCode = code; Object.assign(headers, hdrs || {}); },
+        end: (body) => { context.res = { status: statusCode, headers, body }; },
+        send: (body) => { context.res = { status: statusCode, headers, body }; }
+      };
+    })();
+
+    await adapter.process(req, resShim, async (turnContext) => {
       await bot.run(turnContext);
     });
   } catch (error) {
