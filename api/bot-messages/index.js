@@ -1,11 +1,11 @@
 
-const { TeamsActivityHandler, CloudAdapter, ConfigurationServiceClientCredentialFactory } = require("botbuilder");
+const { TeamsActivityHandler, CloudAdapter, ConfigurationServiceClientCredentialFactory, TurnContext, MessageFactory } = require("botbuilder");
 const { app } = require('@azure/functions');
 
 const credentialsFactory = new ConfigurationServiceClientCredentialFactory({
   MicrosoftAppId: process.env.MicrosoftAppId,
   MicrosoftAppPassword: process.env.MicrosoftAppPassword,
-  MicrosoftAppType: process.env.MicrosoftAppType || "SingleTenant",
+  MicrosoftAppType: process.env.MicrosoftAppType || "MultiTenant",
   MicrosoftAppTenantId: process.env.MicrosoftAppTenantId
 });
 
@@ -50,15 +50,40 @@ class TeamsBot extends TeamsActivityHandler {
       await next();
     });
 
+    // Fallback: some tenants fire conversationUpdate when adding to a team
+    this.onConversationUpdate(async (context, next) => {
+      const convType = context.activity.conversation?.conversationType;
+      const eventType = context.activity.channelData?.eventType;
+      if (convType === "channel" && eventType === "teamMemberAdded") {
+        const added = context.activity.membersAdded || [];
+        if (added.some(m => m.id === context.activity.recipient?.id)) {
+          await context.sendActivity("👋 Thanks for adding me to the team! Type **@2Go Service Desk help** to see what I can do.");
+        }
+      }
+      await next();
+    });
+
     // Handle messages
     this.onMessage(async (context, next) => {
-      const text = context.activity.text?.toLowerCase();
-      if (text.includes("hi")) {
-        await context.sendActivity("Hej där! 👋");
+      // Strip mentions so "@Bot hi" becomes "hi"
+      let text = (context.activity.text || "").toLowerCase();
+      try {
+        const cleaned = TurnContext.removeRecipientMention(context.activity);
+        if (cleaned && cleaned.trim()) text = cleaned.toLowerCase().trim();
+      } catch {}
+
+      if (text.includes("hi") || text.includes("hello")) {
+        await context.sendActivity("Hi there! 👋 How can I help?");
       } else if (text.includes("help")) {
-        await context.sendActivity("Här är vad jag kan hjälpa dig med...");
+        await context.sendActivity(
+          MessageFactory.text(
+            "I can create support cases from Teams messages.\n\n" +
+            "• In a **chat**, type **hi** or **help**.\n" +
+            "• In a **team**, mention me: **@2Go Service Desk help**."
+          )
+        );
       } else {
-        await context.sendActivity("Jag förstod inte riktigt. Skriv 'help' för hjälp.");
+        await context.sendActivity("Try **hi** or **help**.");
       }
       await next();
     });
