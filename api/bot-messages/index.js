@@ -1,10 +1,11 @@
 
 const { TeamsActivityHandler, CloudAdapter, ConfigurationServiceClientCredentialFactory } = require("botbuilder");
+const { app } = require('@azure/functions');
 
 const credentialsFactory = new ConfigurationServiceClientCredentialFactory({
   MicrosoftAppId: process.env.MicrosoftAppId,
   MicrosoftAppPassword: process.env.MicrosoftAppPassword,
-  MicrosoftAppType: process.env.MicrosoftAppType || "MultiTenant",
+  MicrosoftAppType: process.env.MicrosoftAppType || "SingleTenant",
   MicrosoftAppTenantId: process.env.MicrosoftAppTenantId
 });
 
@@ -17,6 +18,11 @@ adapter.onTurnError = async (context, error) => {
     await context.sendActivity("The bot encountered an error."); 
   } catch {}
 };
+
+// Trust service URL for Teams
+if (process.env.BOT_SERVICE_URL) {
+  adapter.continueConversation = adapter.continueConversation || (() => {});
+}
 
 // Teams-specific bot logic
 class TeamsBot extends TeamsActivityHandler {
@@ -69,8 +75,19 @@ module.exports = async function (context, req) {
   }
 
   try {
-    // IMPORTANT: Don't pre-set context.res - let the adapter handle it
-    await adapter.process(req, context.res, async (turnContext) => {
+    // Use proper response handling for Azure Functions
+    await adapter.process(req, {
+      send: (status, body, headers) => {
+        context.res = { 
+          status: status || 200, 
+          body, 
+          headers: headers || { 'Content-Type': 'application/json' }
+        };
+      },
+      end: () => {
+        // Response is handled by context.res
+      }
+    }, async (turnContext) => {
       await bot.run(turnContext);
     });
   } catch (error) {
