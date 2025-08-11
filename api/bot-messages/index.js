@@ -1,23 +1,45 @@
 
-const { BotFrameworkAdapter, ActivityHandler } = require("botbuilder");
+const { TeamsActivityHandler, CloudAdapter, ConfigurationServiceClientCredentialFactory } = require("botbuilder");
 
-const adapter = new BotFrameworkAdapter({
-  appId: process.env.MicrosoftAppId,
-  appPassword: process.env.MicrosoftAppPassword,
+const credentialsFactory = new ConfigurationServiceClientCredentialFactory({
+  MicrosoftAppId: process.env.MicrosoftAppId,
+  MicrosoftAppPassword: process.env.MicrosoftAppPassword,
+  MicrosoftAppType: process.env.MicrosoftAppType || "MultiTenant",
+  MicrosoftAppTenantId: process.env.MicrosoftAppTenantId
 });
 
-// Simple bot logic
-class TeamsBot extends ActivityHandler {
+const adapter = new CloudAdapter(credentialsFactory);
+
+// Add error handler for better debugging
+adapter.onTurnError = async (context, error) => {
+  console.error("❌ Bot error:", error);
+  try { 
+    await context.sendActivity("The bot encountered an error."); 
+  } catch {}
+};
+
+// Teams-specific bot logic
+class TeamsBot extends TeamsActivityHandler {
   constructor() {
     super();
 
-    // Welcome message
+    // Personal welcome message
     this.onMembersAdded(async (context, next) => {
-      const membersAdded = context.activity.membersAdded;
+      const membersAdded = context.activity.membersAdded || [];
       for (let member of membersAdded) {
-        if (member.id !== context.activity.recipient.id) {
-          await context.sendActivity("👋 Välkommen! Skriv 'hi' eller 'help' för att börja.");
+        if (member.id !== context.activity.recipient.id &&
+            context.activity.conversation?.conversationType === "personal") {
+          await context.sendActivity("👋 Välkommen till 2Go Service Desk! Skriv 'help' för att börja.");
         }
+      }
+      await next();
+    });
+
+    // Team installation welcome
+    this.onInstallationUpdateAdd(async (context, next) => {
+      const convType = context.activity.conversation?.conversationType;
+      if (convType === "channel") {
+        await context.sendActivity("👋 Hej team! Jag är 2Go Service Desk bot. Skriv '@bot help' för att komma igång.");
       }
       await next();
     });
@@ -40,30 +62,19 @@ class TeamsBot extends ActivityHandler {
 const bot = new TeamsBot();
 
 module.exports = async function (context, req) {
-  try {
-    if (req.method === "POST") {
-      // Set up the response object properly for Azure Functions
-      context.res = {
-        status: 200,
-        body: undefined,
-        headers: {}
-      };
+  // Health check for GET requests
+  if (req.method === "GET") {
+    context.res = { status: 200, body: "bot-messages endpoint is alive" };
+    return;
+  }
 
-      await adapter.processActivity(req, context.res, async (turnContext) => {
-        await bot.run(turnContext);
-      });
-    } else {
-      context.res = {
-        status: 200,
-        body: "Bot endpoint is running",
-      };
-    }
+  try {
+    // IMPORTANT: Don't pre-set context.res - let the adapter handle it
+    await adapter.process(req, context.res, async (turnContext) => {
+      await bot.run(turnContext);
+    });
   } catch (error) {
-    context.log.error('Bot error:', error.message);
-    context.log.error('Error details:', error);
-    context.res = {
-      status: 500,
-      body: { error: error.message }
-    };
+    console.error("❌ Adapter process error:", error);
+    context.res = { status: 500, body: { error: error.message } };
   }
 };
