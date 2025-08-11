@@ -31,11 +31,13 @@ class TeamsBot extends TeamsActivityHandler {
 
     // Personal welcome message
     this.onMembersAdded(async (context, next) => {
-      const membersAdded = context.activity.membersAdded || [];
-      for (let member of membersAdded) {
-        if (member.id !== context.activity.recipient.id &&
-            context.activity.conversation?.conversationType === "personal") {
-          await context.sendActivity("👋 Välkommen till 2Go Service Desk! Skriv 'help' för att börja.");
+      const added = context.activity.membersAdded || [];
+      const convType = context.activity.conversation?.conversationType;
+      if (convType === "personal") {
+        for (const m of added) {
+          if (m.id !== context.activity.recipient.id) {
+            await context.sendActivity("👋 Welcome to 2Go Service Desk! Type **hi** or **help** to begin.");
+          }
         }
       }
       await next();
@@ -43,9 +45,8 @@ class TeamsBot extends TeamsActivityHandler {
 
     // Team installation welcome
     this.onInstallationUpdateAdd(async (context, next) => {
-      const convType = context.activity.conversation?.conversationType;
-      if (convType === "channel") {
-        await context.sendActivity("👋 Hej team! Jag är 2Go Service Desk bot. Skriv '@bot help' för att komma igång.");
+      if (context.activity.conversation?.conversationType === "channel") {
+        await context.sendActivity("👋 Hello team! I'm 2Go Service Desk bot. Mention me or type **help** to get started.");
       }
       await next();
     });
