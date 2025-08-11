@@ -33,11 +33,16 @@ class TeamsBot extends TeamsActivityHandler {
     this.onMembersAdded(async (context, next) => {
       const added = context.activity.membersAdded || [];
       const convType = context.activity.conversation?.conversationType;
-      if (convType === "personal") {
-        for (const m of added) {
-          if (m.id !== context.activity.recipient.id) {
-            await context.sendActivity("👋 Welcome to 2Go Service Desk! Type **hi** or **help** to begin.");
-          }
+      const botId = context.activity.recipient?.id;
+
+      for (const m of added) {
+        // Personal scope: welcome the user
+        if (convType === "personal" && m.id !== botId) {
+          await context.sendActivity("👋 Welcome to 2Go Service Desk! Type **hi** or **help** to begin.");
+        }
+        // Team/channel scope: when the bot itself is added, send team welcome
+        if (convType === "channel" && m.id === botId) {
+          await context.sendActivity("👋 Hello team! I'm 2Go Service Desk bot. Mention me with **help** to get started.");
         }
       }
       await next();
@@ -54,9 +59,9 @@ class TeamsBot extends TeamsActivityHandler {
     // Fallback: some tenants fire conversationUpdate when adding to a team
     this.onConversationUpdate(async (context, next) => {
       const convType = context.activity.conversation?.conversationType;
-      const eventType = context.activity.channelData?.eventType;
-      if (convType === "channel" && eventType === "teamMemberAdded") {
+      if (convType === "channel") {
         const added = context.activity.membersAdded || [];
+        // When the bot is added to a team, send a welcome
         if (added.some(m => m.id === context.activity.recipient?.id)) {
           await context.sendActivity("👋 Thanks for adding me to the team! Type **@2Go Service Desk help** to see what I can do.");
         }
