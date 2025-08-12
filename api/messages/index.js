@@ -130,10 +130,12 @@ module.exports = async function (context, req) {
       url: req.url,
       bodyType: typeof req.body,
       hasAppId: !!process.env.MicrosoftAppId,
-      hasAppPassword: !!process.env.MicrosoftAppPassword
+      hasAppPassword: !!process.env.MicrosoftAppPassword,
+      appType: process.env.MicrosoftAppType,
+      hasTenantId: !!process.env.MicrosoftAppTenantId
     });
 
-    // Let CloudAdapter process the activity
+    // Let CloudAdapter process the activity with enhanced error logging
     await adapter.process(req, context.res, async (turnContext) => {
       console.log("🤖 Processing turn context for activity type:", turnContext.activity.type);
       await bot.run(turnContext);
@@ -141,7 +143,20 @@ module.exports = async function (context, req) {
 
     console.log("✅ Bot processing completed");
   } catch (error) {
-    console.error("❌ Adapter process error:", error);
+    console.error("❌ Adapter process error:", error.message);
+    console.error("❌ Error details:", {
+      name: error.name,
+      message: error.message,
+      code: error.code,
+      statusCode: error.statusCode
+    });
+    
+    // Log token validation errors specifically
+    if (error.message?.includes('401') || error.message?.includes('Unauthorized') || 
+        error.message?.includes('Invalid AppId') || error.message?.includes('Token validation')) {
+      console.error("🔑 Authentication/Token validation failed - check MicrosoftAppId/Password/Type/TenantId");
+    }
+    
     console.error("❌ Error stack:", error.stack);
     context.res = { 
       status: 500, 
