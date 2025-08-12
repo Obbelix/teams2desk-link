@@ -4,8 +4,8 @@
   "description": "Azure Functions for Teams2Go Service Desk",
   "main": "index.js",
   "dependencies": {
-    "node-fetch": "^2.7.0",
-    "botbuilder": "^4.22.0"
+    "@azure/functions": "^4.7.2",
+    "botbuilder": "^4.17.0-blobs1"
   },
   "engines": {
     "node": ">=18.0.0"
