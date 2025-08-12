@@ -140,17 +140,24 @@ module.exports = async function (context, req) {
     console.log(`[messages] OK in ${Date.now()-start}ms`);
   } catch (error) {
     console.error(`[messages] FAILED after ${Date.now()-start}ms:`, error?.message);
+    console.error("❌ FULL ERROR OBJECT:", JSON.stringify(error, null, 2));
     console.error("❌ Error details:", {
       name: error.name,
       message: error.message,
       code: error.code,
-      statusCode: error.statusCode
+      statusCode: error.statusCode,
+      innerError: error.innerError
     });
     
     // Log token validation errors specifically
     if (error.message?.includes('401') || error.message?.includes('Unauthorized') || 
-        error.message?.includes('Invalid AppId') || error.message?.includes('Token validation')) {
-      console.error("🔑 Authentication/Token validation failed - check MicrosoftAppId/Password/Type/TenantId");
+        error.message?.includes('Invalid AppId') || error.message?.includes('Token validation') ||
+        error.message?.includes('signature') || error.message?.includes('claims')) {
+      console.error("🔑 AUTH FAIL: Check these exact values:");
+      console.error("MicrosoftAppId:", process.env.MicrosoftAppId);
+      console.error("MicrosoftAppType:", process.env.MicrosoftAppType);
+      console.error("MicrosoftAppTenantId:", process.env.MicrosoftAppTenantId);
+      console.error("MicrosoftAppPassword length:", process.env.MicrosoftAppPassword?.length || 0);
     }
     
     console.error("❌ Error stack:", error.stack);
