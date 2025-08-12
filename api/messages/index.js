@@ -1,5 +1,11 @@
-
-const { TeamsActivityHandler, CloudAdapter, ConfigurationServiceClientCredentialFactory, TurnContext, MessageFactory } = require("botbuilder");
+const { 
+  TeamsActivityHandler, 
+  CloudAdapter, 
+  ConfigurationServiceClientCredentialFactory,
+  createBotFrameworkAuthenticationFromConfiguration,
+  TurnContext, 
+  MessageFactory 
+} = require("botbuilder");
 
 const credentialsFactory = new ConfigurationServiceClientCredentialFactory({
   MicrosoftAppId: process.env.MicrosoftAppId,
@@ -8,21 +14,17 @@ const credentialsFactory = new ConfigurationServiceClientCredentialFactory({
   MicrosoftAppTenantId: process.env.MicrosoftAppTenantId
 });
 
-// Initialize CloudAdapter for Azure Functions
-const adapter = new CloudAdapter(credentialsFactory);
+const botFrameworkAuthentication = createBotFrameworkAuthenticationFromConfiguration(null, credentialsFactory);
+const adapter = new CloudAdapter(botFrameworkAuthentication);
 
 // Add error handler for better debugging
 adapter.onTurnError = async (context, error) => {
   console.error("❌ Bot error:", error);
+  console.error("❌ Bot error stack:", error.stack);
   try { 
     await context.sendActivity("The bot encountered an error."); 
   } catch {}
 };
-
-// Trust service URL for Teams
-if (process.env.BOT_SERVICE_URL) {
-  adapter.continueConversation = adapter.continueConversation || (() => {});
-}
 
 // Teams-specific bot logic
 class TeamsBot extends TeamsActivityHandler {
@@ -78,7 +80,9 @@ class TeamsBot extends TeamsActivityHandler {
         if (cleaned && cleaned.trim()) text = cleaned.toLowerCase().trim();
       } catch {}
 
-      if (text.includes("hi") || text.includes("hello")) {
+      console.log("📨 Received message:", text);
+
+      if (text.includes("hi") || text.includes("hello") || text.includes("hej")) {
         await context.sendActivity("Hi there! 👋 How can I help?");
       } else if (text.includes("help")) {
         await context.sendActivity(
@@ -89,7 +93,7 @@ class TeamsBot extends TeamsActivityHandler {
           )
         );
       } else {
-        await context.sendActivity("Try **hi** or **help**.");
+        await context.sendActivity(`Echo: ${context.activity.text || "No text received"}`);
       }
       await next();
     });
@@ -98,10 +102,25 @@ class TeamsBot extends TeamsActivityHandler {
 
 const bot = new TeamsBot();
 
+// Azure Functions entrypoint
 module.exports = async function (context, req) {
+  // Handle preflight CORS
+  if (req.method === "OPTIONS") {
+    context.res = { 
+      status: 200, 
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+      },
+      body: "" 
+    };
+    return;
+  }
+
   // Health check for GET requests
   if (req.method === "GET") {
-    context.res = { status: 200, body: "bot-messages endpoint is alive" };
+    context.res = { status: 200, body: "messages endpoint is alive" };
     return;
   }
 
@@ -109,26 +128,18 @@ module.exports = async function (context, req) {
     console.log("📨 Received bot request:", {
       method: req.method,
       url: req.url,
-      headers: req.headers,
-      bodyType: typeof req.body
+      bodyType: typeof req.body,
+      hasAppId: !!process.env.MicrosoftAppId,
+      hasAppPassword: !!process.env.MicrosoftAppPassword
     });
 
-    // Process the bot request
+    // Let CloudAdapter process the activity
     await adapter.process(req, context.res, async (turnContext) => {
-      console.log("🤖 Processing turn context");
+      console.log("🤖 Processing turn context for activity type:", turnContext.activity.type);
       await bot.run(turnContext);
     });
 
-    // Ensure response is set
-    if (!context.res) {
-      context.res = { 
-        status: 200, 
-        body: "OK",
-        headers: { 'Content-Type': 'application/json' }
-      };
-    }
-
-    console.log("✅ Bot response sent:", context.res.status);
+    console.log("✅ Bot processing completed");
   } catch (error) {
     console.error("❌ Adapter process error:", error);
     console.error("❌ Error stack:", error.stack);
