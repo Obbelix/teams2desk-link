@@ -107,23 +107,38 @@ module.exports = async function (context, req) {
   }
 
   try {
-    // Use proper Azure Functions adapter processing
-    await adapter.process(req, {
-      send: (status, body, headers) => {
-        context.res = { 
-          status: status || 200, 
-          body, 
-          headers: headers || { 'Content-Type': 'application/json' }
+    // Create a response object that mimics Express.js response for BotFramework
+    const res = {
+      status: function(statusCode) {
+        this.statusCode = statusCode;
+        return this;
+      },
+      send: function(body) {
+        context.res = {
+          status: this.statusCode || 200,
+          headers: { 'Content-Type': 'application/json' },
+          body: body
         };
       },
-      end: () => {
-        // Response handled by context.res
+      end: function() {
+        if (!context.res) {
+          context.res = {
+            status: this.statusCode || 200,
+            headers: { 'Content-Type': 'application/json' }
+          };
+        }
       }
-    }, async (turnContext) => {
+    };
+
+    await adapter.process(req, res, async (turnContext) => {
       await bot.run(turnContext);
     });
   } catch (error) {
     console.error("❌ Adapter process error:", error);
-    context.res = { status: 500, body: { error: error.message } };
+    context.res = { 
+      status: 500, 
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error: error.message }) 
+    };
   }
 };
