@@ -71,7 +71,7 @@ class TeamsBot extends TeamsActivityHandler {
       await next();
     });
 
-    // Handle messages
+    // Handle messages - ensure immediate response
     this.onMessage(async (context, next) => {
       // Strip mentions so "@Bot hi" becomes "hi"
       let text = (context.activity.text || "").toLowerCase();
@@ -82,6 +82,7 @@ class TeamsBot extends TeamsActivityHandler {
 
       console.log("📨 Received message:", text);
 
+      // Send immediate reply to avoid timeouts
       if (text.includes("hi") || text.includes("hello") || text.includes("hej")) {
         await context.sendActivity("Hi there! 👋 How can I help?");
       } else if (text.includes("help")) {
@@ -93,7 +94,7 @@ class TeamsBot extends TeamsActivityHandler {
           )
         );
       } else {
-        await context.sendActivity(`Echo: ${context.activity.text || "No text received"}`);
+        await context.sendActivity(`Echo: ${context.activity.text || "(empty)"}`);
       }
       await next();
     });
@@ -105,17 +106,9 @@ const bot = new TeamsBot();
 // Azure Functions entrypoint
 module.exports = async function (context, req) {
   // Handle preflight CORS
-  if (req.method === "OPTIONS") {
-    context.res = { 
-      status: 200, 
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-      },
-      body: "" 
-    };
-    return;
+  if (req.method === "OPTIONS") { 
+    context.res = { status: 200, body: '' }; 
+    return; 
   }
 
   // Health check for GET requests
@@ -124,6 +117,9 @@ module.exports = async function (context, req) {
     return;
   }
 
+  const start = Date.now();
+  console.log(`[messages] start ${new Date(start).toISOString()}`);
+  
   try {
     console.log("📨 Received bot request:", {
       method: req.method,
@@ -135,15 +131,15 @@ module.exports = async function (context, req) {
       hasTenantId: !!process.env.MicrosoftAppTenantId
     });
 
-    // Let CloudAdapter process the activity with enhanced error logging
+    // Let CloudAdapter process the activity with timing
     await adapter.process(req, context.res, async (turnContext) => {
       console.log("🤖 Processing turn context for activity type:", turnContext.activity.type);
       await bot.run(turnContext);
     });
 
-    console.log("✅ Bot processing completed");
+    console.log(`[messages] OK in ${Date.now()-start}ms`);
   } catch (error) {
-    console.error("❌ Adapter process error:", error.message);
+    console.error(`[messages] FAILED after ${Date.now()-start}ms:`, error?.message);
     console.error("❌ Error details:", {
       name: error.name,
       message: error.message,
