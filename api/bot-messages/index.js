@@ -1,6 +1,5 @@
 
 const { TeamsActivityHandler, CloudAdapter, ConfigurationServiceClientCredentialFactory, TurnContext, MessageFactory } = require("botbuilder");
-const { app } = require('@azure/functions');
 
 const credentialsFactory = new ConfigurationServiceClientCredentialFactory({
   MicrosoftAppId: process.env.MicrosoftAppId,
@@ -9,7 +8,7 @@ const credentialsFactory = new ConfigurationServiceClientCredentialFactory({
   MicrosoftAppTenantId: process.env.MicrosoftAppTenantId
 });
 
-// Correct CloudAdapter initialization for Azure Functions
+// Initialize CloudAdapter for Azure Functions
 const adapter = new CloudAdapter(credentialsFactory);
 
 // Add error handler for better debugging
@@ -107,38 +106,36 @@ module.exports = async function (context, req) {
   }
 
   try {
-    // Create a response object that mimics Express.js response for BotFramework
-    const res = {
-      status: function(statusCode) {
-        this.statusCode = statusCode;
-        return this;
-      },
-      send: function(body) {
-        context.res = {
-          status: this.statusCode || 200,
-          headers: { 'Content-Type': 'application/json' },
-          body: body
-        };
-      },
-      end: function() {
-        if (!context.res) {
-          context.res = {
-            status: this.statusCode || 200,
-            headers: { 'Content-Type': 'application/json' }
-          };
-        }
-      }
-    };
+    console.log("📨 Received bot request:", {
+      method: req.method,
+      url: req.url,
+      headers: req.headers,
+      bodyType: typeof req.body
+    });
 
-    await adapter.process(req, res, async (turnContext) => {
+    // Process the bot request
+    await adapter.process(req, context.res, async (turnContext) => {
+      console.log("🤖 Processing turn context");
       await bot.run(turnContext);
     });
+
+    // Ensure response is set
+    if (!context.res) {
+      context.res = { 
+        status: 200, 
+        body: "OK",
+        headers: { 'Content-Type': 'application/json' }
+      };
+    }
+
+    console.log("✅ Bot response sent:", context.res.status);
   } catch (error) {
     console.error("❌ Adapter process error:", error);
+    console.error("❌ Error stack:", error.stack);
     context.res = { 
       status: 500, 
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: error.message }) 
+      body: JSON.stringify({ error: error.message, stack: error.stack }) 
     };
   }
 };
