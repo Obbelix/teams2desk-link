@@ -46,8 +46,8 @@ const Index = () => {
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </Button>
-            <Button variant="outline" size="lg" className="border-teams-blue text-teams-blue hover:bg-teams-blue-light">
-              View Documentation
+            <Button variant="outline" size="lg" className="border-teams-blue text-teams-blue hover:bg-teams-blue-light" asChild>
+              <Link to="/flow-chart">View Flow Chart</Link>
             </Button>
           </div>
         </div>
