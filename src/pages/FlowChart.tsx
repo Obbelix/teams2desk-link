@@ -17,123 +17,123 @@ const initialNodes = [
   {
     id: '1',
     type: 'input',
-    data: { label: 'Teams User Sends Message' },
+    data: { label: 'Teams User Sends Message\n📱 Teams Client' },
     position: { x: 100, y: 0 },
     style: { background: '#e1f5fe', border: '2px solid #0277bd', color: '#01579b' }
   },
   {
     id: '2',
-    data: { label: 'Teams Bot Receives Message' },
+    data: { label: 'Teams Bot Receives Message\n📄 api/messages/index.js' },
     position: { x: 100, y: 100 },
     style: { background: '#e8f5e8', border: '2px solid #388e3c', color: '#1b5e20' }
   },
   {
     id: '3',
-    data: { label: 'Message Type Check' },
+    data: { label: 'Message Type Check\n📄 api/messages/index.js' },
     position: { x: 100, y: 200 },
     style: { background: '#fff3e0', border: '2px solid #f57c00', color: '#e65100' }
   },
   {
     id: '4a',
-    data: { label: 'Bot Response\n(hi/hello/help)' },
+    data: { label: 'Bot Response\n(hi/hello/help)\n📄 api/messages/index.js' },
     position: { x: -100, y: 300 },
     style: { background: '#f3e5f5', border: '2px solid #7b1fa2', color: '#4a148c' }
   },
   {
     id: '4b',
-    data: { label: 'Normal Processing\n(other messages)' },
+    data: { label: 'Normal Processing\n(other messages)\n📄 api/messages/index.js' },
     position: { x: 300, y: 300 },
     style: { background: '#f3e5f5', border: '2px solid #7b1fa2', color: '#4a148c' }
   },
   {
     id: '5',
     type: 'input',
-    data: { label: 'User Opens /create-case' },
+    data: { label: 'User Opens /create-case\n🌐 Browser' },
     position: { x: 600, y: 0 },
     style: { background: '#e1f5fe', border: '2px solid #0277bd', color: '#01579b' }
   },
   {
     id: '6',
-    data: { label: 'Teams SDK Initialize' },
+    data: { label: 'Teams SDK Initialize\n📄 src/pages/CreateCase.tsx' },
     position: { x: 600, y: 100 },
     style: { background: '#e8f5e8', border: '2px solid #388e3c', color: '#1b5e20' }
   },
   {
     id: '7',
-    data: { label: 'Extract Message Data\nfrom URL params' },
+    data: { label: 'Extract Message Data\nfrom URL params\n📄 src/pages/CreateCase.tsx' },
     position: { x: 600, y: 200 },
     style: { background: '#fff3e0', border: '2px solid #f57c00', color: '#e65100' }
   },
   {
     id: '8',
-    data: { label: 'Auto-populate Form' },
+    data: { label: 'Auto-populate Form\n📄 src/pages/CreateCase.tsx' },
     position: { x: 600, y: 300 },
     style: { background: '#f3e5f5', border: '2px solid #7b1fa2', color: '#4a148c' }
   },
   {
     id: '9',
-    data: { label: 'User Fills Ticket Details' },
+    data: { label: 'User Fills Ticket Details\n📄 src/pages/CreateCase.tsx' },
     position: { x: 600, y: 400 },
     style: { background: '#e1f5fe', border: '2px solid #0277bd', color: '#01579b' }
   },
   {
     id: '10',
-    data: { label: 'POST to /api/create-case' },
+    data: { label: 'POST to /api/create-case\n📄 src/pages/CreateCase.tsx' },
     position: { x: 600, y: 500 },
     style: { background: '#fce4ec', border: '2px solid #c2185b', color: '#880e4f' }
   },
   {
     id: '11',
-    data: { label: 'Validate Environment\nVariables' },
+    data: { label: 'Validate Environment\nVariables\n📄 api/create-case/index.js' },
     position: { x: 600, y: 600 },
     style: { background: '#fff3e0', border: '2px solid #f57c00', color: '#e65100' }
   },
   {
     id: '12a',
-    data: { label: 'Return 500 Error' },
+    data: { label: 'Return 500 Error\n📄 api/create-case/index.js' },
     position: { x: 400, y: 700 },
     style: { background: '#ffebee', border: '2px solid #f44336', color: '#b71c1c' }
   },
   {
     id: '12b',
-    data: { label: 'Format Payload\nfor easitGO' },
+    data: { label: 'Format Payload\nfor easitGO\n📄 api/create-case/index.js' },
     position: { x: 800, y: 700 },
     style: { background: '#e8f5e8', border: '2px solid #388e3c', color: '#1b5e20' }
   },
   {
     id: '13',
-    data: { label: 'Create Basic Auth\nHeader' },
+    data: { label: 'Create Basic Auth\nHeader\n📄 api/create-case/index.js' },
     position: { x: 800, y: 800 },
     style: { background: '#f3e5f5', border: '2px solid #7b1fa2', color: '#4a148c' }
   },
   {
     id: '14',
-    data: { label: 'POST to Service\nDesk API' },
+    data: { label: 'POST to Service\nDesk API\n📄 api/create-case/index.js' },
     position: { x: 800, y: 900 },
     style: { background: '#fce4ec', border: '2px solid #c2185b', color: '#880e4f' }
   },
   {
     id: '15a',
-    data: { label: 'Log Error &\nReturn 500' },
+    data: { label: 'Log Error &\nReturn 500\n📄 api/create-case/index.js' },
     position: { x: 600, y: 1000 },
     style: { background: '#ffebee', border: '2px solid #f44336', color: '#b71c1c' }
   },
   {
     id: '15b',
-    data: { label: 'Return Success\nwith Case ID' },
+    data: { label: 'Return Success\nwith Case ID\n📄 api/create-case/index.js' },
     position: { x: 1000, y: 1000 },
     style: { background: '#e8f5e8', border: '2px solid #388e3c', color: '#1b5e20' }
   },
   {
     id: '16',
-    data: { label: 'Show Success Message' },
+    data: { label: 'Show Success Message\n📄 src/pages/CreateCase.tsx' },
     position: { x: 1000, y: 1100 },
     style: { background: '#f3e5f5', border: '2px solid #7b1fa2', color: '#4a148c' }
   },
   {
     id: '17',
     type: 'output',
-    data: { label: 'Display Link to\nCreated Case' },
+    data: { label: 'Display Link to\nCreated Case\n📄 src/pages/CreateCase.tsx' },
     position: { x: 1000, y: 1200 },
     style: { background: '#e1f5fe', border: '2px solid #0277bd', color: '#01579b' }
   }
