@@ -33,7 +33,7 @@ jobs:
           app_location: "/" # App source code path
           api_location: "api" # Api source code path - optional
           output_location: "dist" # Built app content directory - optional
-          api_build_command: "npm install && npm run build" # Build Azure Functions
+          api_build_command: "npm install" # Azure Functions don't need build
           app_build_command: "npm install && npm run build" # Frontend build command
           ###### End of Repository/Build Configurations ######
 
