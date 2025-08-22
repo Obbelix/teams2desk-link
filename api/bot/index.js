@@ -138,6 +138,32 @@ module.exports = async function (context, req) {
       userAgent: req.headers['user-agent']
     });
 
+    // JWT Debug: Analyze JWT token if present
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+      const token = req.headers.authorization.substring(7);
+      console.log("🔑 JWT Debug - Full token:", token);
+      
+      try {
+        // Decode JWT header and payload (without verification)
+        const parts = token.split('.');
+        if (parts.length === 3) {
+          const header = JSON.parse(Buffer.from(parts[0], 'base64').toString());
+          const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
+          
+          console.log("🔑 JWT Debug - Token header:", header);
+          console.log("🔑 JWT Debug - Token payload:", {
+            aud: payload.aud,
+            iss: payload.iss,
+            appid: payload.appid,
+            exp: payload.exp ? new Date(payload.exp * 1000).toISOString() : 'NO EXP',
+            iat: payload.iat ? new Date(payload.iat * 1000).toISOString() : 'NO IAT'
+          });
+        }
+      } catch (jwtError) {
+        console.log("🔑 JWT Debug - Could not decode JWT:", jwtError.message);
+      }
+    }
+
     // JWT Debug: Log environment variables (masked for security)
     console.log("🔑 JWT Debug - Environment variables:", {
       MicrosoftAppId: process.env.MicrosoftAppId ? `${process.env.MicrosoftAppId.substring(0, 8)}...` : "NOT SET",
