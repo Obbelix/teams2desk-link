@@ -4,12 +4,12 @@ on:
   push:
     branches:
       - main
-      - fix-backend-final
+      - fix-backend-build
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
       - main
-      - fix-backend-final
+      - fix-backend-build
 
 jobs:
   build_and_deploy_job:
@@ -33,6 +33,8 @@ jobs:
           app_location: "/" # App source code path
           api_location: "api" # Api source code path - optional
           output_location: "dist" # Built app content directory - optional
+          api_build_command: "npm install" # Azure Functions don't need build
+          app_build_command: "npm install && npm run build" # Frontend build command
           ###### End of Repository/Build Configurations ######
 
   close_pull_request_job:
