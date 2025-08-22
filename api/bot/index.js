@@ -131,6 +131,32 @@ module.exports = async function (context, req) {
       hasTenantId: !!process.env.MicrosoftAppTenantId
     });
 
+    // JWT Debug: Log request headers and auth info
+    console.log("🔑 JWT Debug - Request headers:", {
+      authorization: req.headers.authorization ? req.headers.authorization.substring(0, 50) + "..." : "NOT SET",
+      contentType: req.headers['content-type'],
+      userAgent: req.headers['user-agent']
+    });
+
+    // JWT Debug: Log environment variables (masked for security)
+    console.log("🔑 JWT Debug - Environment variables:", {
+      MicrosoftAppId: process.env.MicrosoftAppId ? `${process.env.MicrosoftAppId.substring(0, 8)}...` : "NOT SET",
+      MicrosoftAppPassword: process.env.MicrosoftAppPassword ? `***${process.env.MicrosoftAppPassword.substring(process.env.MicrosoftAppPassword.length - 4)}` : "NOT SET",
+      MicrosoftAppType: process.env.MicrosoftAppType || "NOT SET",
+      MicrosoftAppTenantId: process.env.MicrosoftAppTenantId ? `${process.env.MicrosoftAppTenantId.substring(0, 8)}...` : "NOT SET"
+    });
+
+    // JWT Debug: Log request body structure
+    if (req.body) {
+      console.log("🔑 JWT Debug - Request body structure:", {
+        type: req.body.type,
+        from: req.body.from?.id,
+        conversation: req.body.conversation?.id,
+        channelId: req.body.channelId,
+        text: req.body.text ? req.body.text.substring(0, 50) : "NO TEXT"
+      });
+    }
+
     // Let CloudAdapter process the activity with timing
     await adapter.process(req, context.res, async (turnContext) => {
       console.log("🤖 Processing turn context for activity type:", turnContext.activity.type);
@@ -152,12 +178,33 @@ module.exports = async function (context, req) {
     // Log token validation errors specifically
     if (error.message?.includes('401') || error.message?.includes('Unauthorized') || 
         error.message?.includes('Invalid AppId') || error.message?.includes('Token validation') ||
-        error.message?.includes('signature') || error.message?.includes('claims')) {
-      console.error("🔑 AUTH FAIL: Check these exact values:");
+        error.message?.includes('signature') || error.message?.includes('claims') ||
+        error.message?.includes('JWT') || error.message?.includes('authentication')) {
+      console.error("🔑 JWT AUTH FAIL: Detailed analysis:");
+      console.error("Error message:", error.message);
+      console.error("Error code:", error.code);
+      console.error("Error statusCode:", error.statusCode);
+      
+      // Check if it's a JWT validation issue
+      if (error.message?.includes('JWT') || error.message?.includes('signature')) {
+        console.error("🔑 JWT VALIDATION ISSUE DETECTED:");
+        console.error("This appears to be a JWT signature or validation problem");
+        console.error("Check if MicrosoftAppPassword matches what Azure Bot Service uses");
+      }
+      
+      // Check if it's an App ID mismatch
+      if (error.message?.includes('Invalid AppId') || error.message?.includes('AppId')) {
+        console.error("🔑 APP ID MISMATCH DETECTED:");
+        console.error("This appears to be an App ID mismatch issue");
+        console.error("Check if MicrosoftAppId matches the bot's App ID");
+      }
+      
+      console.error("🔑 Current environment configuration:");
       console.error("MicrosoftAppId:", process.env.MicrosoftAppId);
       console.error("MicrosoftAppType:", process.env.MicrosoftAppType);
       console.error("MicrosoftAppTenantId:", process.env.MicrosoftAppTenantId);
       console.error("MicrosoftAppPassword length:", process.env.MicrosoftAppPassword?.length || 0);
+      console.error("MicrosoftAppPassword last 4 chars:", process.env.MicrosoftAppPassword?.substring(process.env.MicrosoftAppPassword.length - 4) || "N/A");
     }
     
     console.error("❌ Error stack:", error.stack);
