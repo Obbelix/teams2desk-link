@@ -50,16 +50,30 @@ module.exports = async function (context, req) {
         
         console.log(`🤖 Bot response: "${response}"`);
         
-        // Return the bot's response
+        // Return Bot Framework Activity format (what Teams expects)
+        const botResponse = {
+            type: "message",
+            text: response,
+            from: {
+                id: "teams2desk-bot",
+                name: "Teams2Desk Bot"
+            },
+            recipient: {
+                id: req.body?.from?.id || "user123",
+                name: req.body?.from?.name || "User"
+            },
+            conversation: {
+                id: req.body?.conversation?.id || "conv123"
+            },
+            replyToId: req.body?.id || null,
+            channelId: req.body?.channelId || "msteams",
+            timestamp: new Date().toISOString()
+        };
+        
+        // Return the bot's response in Bot Framework format
         context.res = {
             status: 200,
-            body: {
-                success: true,
-                message: "Bot logic executed successfully (JWT completely bypassed)",
-                received: messageText,
-                response: response,
-                timestamp: new Date().toISOString()
-            },
+            body: botResponse,
             headers: { "Content-Type": "application/json" }
         };
         
@@ -68,9 +82,21 @@ module.exports = async function (context, req) {
         context.res = {
             status: 500,
             body: {
-                success: false,
-                error: "Bot processing failed",
-                details: error.message
+                type: "message",
+                text: "Sorry, I encountered an error processing your request. Please try again.",
+                from: {
+                    id: "teams2desk-bot",
+                    name: "Teams2Desk Bot"
+                },
+                recipient: {
+                    id: req.body?.from?.id || "user123",
+                    name: req.body?.from?.name || "User"
+                },
+                conversation: {
+                    id: req.body?.conversation?.id || "conv123"
+                },
+                channelId: req.body?.channelId || "msteams",
+                timestamp: new Date().toISOString()
             },
             headers: { "Content-Type": "application/json" }
         };
