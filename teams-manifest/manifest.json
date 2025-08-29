@@ -2,16 +2,16 @@
   "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.18/MicrosoftTeams.schema.json",
   "version": "1.4.0",
   "manifestVersion": "1.18",
-  "id": "5108ef50-63c5-4a69-8d1c-f596d806b294",
+  "id": "e9305621-6a84-460f-b9bb-f001a58ff4d1",
   "name": {
     "short": "2Go Service Desk",
     "full": "2Go Service Desk - Create Support Cases"
   },
   "developer": {
     "name": "Teams2Go",
-    "websiteUrl": "https://jolly-coast-0f84fb503.2.azurestaticapps.net",
-    "privacyUrl": "https://jolly-coast-0f84fb503.2.azurestaticapps.net/privacy",
-    "termsOfUseUrl": "https://jolly-coast-0f84fb503.2.azurestaticapps.net/terms"
+    "websiteUrl": "https://red-cliff-0ca521103.2.azurestaticapps.net",
+    "privacyUrl": "https://red-cliff-0ca521103.2.azurestaticapps.net/privacy",
+    "termsOfUseUrl": "https://red-cliff-0ca521103.2.azurestaticapps.net/terms"
   },
   "icons": {
     "color": "color.png",
@@ -24,7 +24,7 @@
   "accentColor": "#0078d4",
   "configurableTabs": [
     {
-      "configurationUrl": "https://jolly-coast-0f84fb503.2.azurestaticapps.net/",
+      "configurationUrl": "https://red-cliff-0ca521103.2.azurestaticapps.net/",
       "canUpdateConfiguration": true,
       "scopes": [
         "team",
@@ -36,8 +36,8 @@
     {
       "entityId": "teams2go-servicedesk-tab",
       "name": "Service Desk",
-      "contentUrl": "https://jolly-coast-0f84fb503.2.azurestaticapps.net/",
-      "websiteUrl": "https://jolly-coast-0f84fb503.2.azurestaticapps.net/",
+      "contentUrl": "https://red-cliff-0ca521103.2.azurestaticapps.net/",
+      "websiteUrl": "https://red-cliff-0ca521103.2.azurestaticapps.net/",
       "scopes": [
         "personal"
       ]
@@ -45,7 +45,7 @@
   ],
   "bots": [
     {
-      "botId": "5108ef50-63c5-4a69-8d1c-f596d806b294",
+      "botId": "e9305621-6a84-460f-b9bb-f001a58ff4d1",
       "scopes": [
         "personal",
         "team",
@@ -59,7 +59,7 @@
   ],
   "composeExtensions": [
     {
-      "botId": "5108ef50-63c5-4a69-8d1c-f596d806b294",
+      "botId": "e9305621-6a84-460f-b9bb-f001a58ff4d1",
       "commands": [
         {
           "id": "createCase",
@@ -76,7 +76,7 @@
             "title": "Create Service Desk Case",
             "width": "large",
             "height": "large",
-            "url": "https://jolly-coast-0f84fb503.2.azurestaticapps.net/#/create-case"
+            "url": "https://red-cliff-0ca521103.2.azurestaticapps.net/#/create-case"
           }
         }
       ],
@@ -85,7 +85,7 @@
           "type": "link",
           "value": {
             "domains": [
-              "jolly-coast-0f84fb503.2.azurestaticapps.net"
+              "https://red-cliff-0ca521103.2.azurestaticapps.net"
             ],
             "supportsAnonymizedPayloads": false
           }
@@ -97,7 +97,7 @@
     "identity"
   ],
   "validDomains": [
-    "jolly-coast-0f84fb503.2.azurestaticapps.net",
+    "https://red-cliff-0ca521103.2.azurestaticapps.net",
     "token.botframework.com"
   ]
 }
