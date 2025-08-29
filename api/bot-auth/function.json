@@ -16,5 +16,5 @@
       "name": "res"
     }
   ],
-  "scriptFile": "../dist/bot-auth/index.js"
+  "scriptFile": "./index.js"
 }
