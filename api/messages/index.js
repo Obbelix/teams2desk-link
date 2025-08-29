@@ -73,29 +73,50 @@ class TeamsBot extends TeamsActivityHandler {
 
     // Handle messages - ensure immediate response
     this.onMessage(async (context, next) => {
-      // Strip mentions so "@Bot hi" becomes "hi"
-      let text = (context.activity.text || "").toLowerCase();
       try {
-        const cleaned = TurnContext.removeRecipientMention(context.activity);
-        if (cleaned && cleaned.trim()) text = cleaned.toLowerCase().trim();
-      } catch {}
+        console.log("📨 Processing message activity");
+        
+        // Strip mentions so "@Bot hi" becomes "hi"
+        let text = (context.activity.text || "").toLowerCase();
+        try {
+          const cleaned = TurnContext.removeRecipientMention(context.activity);
+          if (cleaned && cleaned.trim()) text = cleaned.toLowerCase().trim();
+        } catch (cleanError) {
+          console.log("⚠️ Mention cleaning failed:", cleanError.message);
+        }
 
-      console.log("📨 Received message:", text);
+        console.log("📨 Received message:", text);
 
-      // Send immediate reply to avoid timeouts
-      if (text.includes("hi") || text.includes("hello") || text.includes("hej")) {
-        await context.sendActivity("Hi there! 👋 How can I help?");
-      } else if (text.includes("help")) {
-        await context.sendActivity(
-          MessageFactory.text(
-            "I can create support cases from Teams messages.\n\n" +
-            "• In a **chat**, type **hi** or **help**.\n" +
-            "• In a **team**, mention me: **@2Go Service Desk help**."
-          )
-        );
-      } else {
-        await context.sendActivity(`Echo: ${context.activity.text || "(empty)"}`);
+        // Send immediate reply to avoid timeouts - using Promise to ensure quick response
+        let responsePromise;
+        if (text.includes("hi") || text.includes("hello") || text.includes("hej")) {
+          responsePromise = context.sendActivity("Hi there! 👋 How can I help?");
+        } else if (text.includes("help")) {
+          responsePromise = context.sendActivity(
+            MessageFactory.text(
+              "I can create support cases from Teams messages.\n\n" +
+              "• In a **chat**, type **hi** or **help**.\n" +
+              "• In a **team**, mention me: **@2Go Service Desk help**."
+            )
+          );
+        } else {
+          responsePromise = context.sendActivity(`Echo: ${context.activity.text || "(empty)"}`);
+        }
+
+        // Ensure response is sent quickly
+        await responsePromise;
+        console.log("✅ Message sent successfully");
+        
+      } catch (messageError) {
+        console.error("❌ Message handler error:", messageError);
+        // Try to send error response if possible
+        try {
+          await context.sendActivity("Sorry, I encountered an error processing your message.");
+        } catch (sendError) {
+          console.error("❌ Failed to send error message:", sendError);
+        }
       }
+      
       await next();
     });
   }
